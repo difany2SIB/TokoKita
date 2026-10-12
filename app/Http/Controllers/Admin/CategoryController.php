@@ -24,8 +24,17 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:categories,name',
+            ],
             'description' => ['nullable', 'string'],
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.unique' => 'Nama kategori sudah digunakan.',
+            'name.max' => 'Nama kategori maksimal 100 karakter.',
         ]);
 
         Category::create($validated);
@@ -43,8 +52,17 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('categories', 'name')->ignore($category->id),
+            ],
             'description' => ['nullable', 'string'],
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.unique' => 'Nama kategori sudah digunakan.',
+            'name.max' => 'Nama kategori maksimal 100 karakter.',
         ]);
 
         $category->update($validated);
